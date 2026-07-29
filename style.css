@@ -1017,34 +1017,18 @@ button.panel-card {
   overflow: hidden;
 }
 
-/* Deliberately a bit bigger than the viewport and anchored to the right
-   edge, so it bleeds off screen a little instead of shrinking to fit
-   inside it. Kept modest (not the huge 160% this started at) because the
-   camera photo has almost no margin around it on the left - the ENTER/
-   MENU buttons sit right at that edge, and iPad's narrower aspect ratio
-   (unlike a wide desktop window) was cropping straight into them. */
+/* Sized to always fit fully inside the viewport - never bigger - so the
+   ENTER/MENU buttons (which sit right at the photo's own edge, with
+   almost no margin to spare) never get cropped, on any device. Anchored
+   right so on wider screens, where the fitted box ends up narrower than
+   the viewport, it still sits toward the right instead of dead center. */
 .camera-stage {
   position: absolute;
   top: 50%;
   right: 0;
   transform: translateY(-50%);
-  width: min(125vw, calc(125vh * 750 / 669));
-  height: min(125vh, calc(125vw * 669 / 750));
-}
-
-/* In portrait, the viewport is narrower than the camera photo's own
-   750:669 ratio - the "fit" size at 100% already touches both left and
-   right edges with zero slack, so any bigger-and-shift-right treatment
-   crops straight into the ENTER/MENU buttons (or worse). Just fit it
-   fully instead of bleeding off screen. */
-@media (orientation: portrait) {
-  .camera-stage {
-    right: auto;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: min(100vw, calc(100vh * 750 / 669));
-    height: min(100vh, calc(100vw * 669 / 750));
-  }
+  width: min(100vw, calc(100vh * 750 / 669));
+  height: min(100vh, calc(100vw * 669 / 750));
 }
 
 .camera-video {
