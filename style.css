@@ -1017,16 +1017,19 @@ button.panel-card {
   overflow: hidden;
 }
 
-/* Deliberately bigger than the viewport and anchored to the right edge -
-   it's meant to bleed off screen (left/top/bottom get clipped by the
-   overflow: hidden above) rather than shrink to fit inside it. */
+/* Deliberately a bit bigger than the viewport and anchored to the right
+   edge, so it bleeds off screen a little instead of shrinking to fit
+   inside it. Kept modest (not the huge 160% this started at) because the
+   camera photo has almost no margin around it on the left - the ENTER/
+   MENU buttons sit right at that edge, and iPad's narrower aspect ratio
+   (unlike a wide desktop window) was cropping straight into them. */
 .camera-stage {
   position: absolute;
   top: 50%;
   right: 0;
   transform: translateY(-50%);
-  width: min(160vw, calc(160vh * 750 / 669));
-  height: min(160vh, calc(160vw * 669 / 750));
+  width: min(125vw, calc(125vh * 750 / 669));
+  height: min(125vh, calc(125vw * 669 / 750));
 }
 
 .camera-video {
