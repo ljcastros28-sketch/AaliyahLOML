@@ -1085,6 +1085,41 @@ button.panel-card {
   display: block;
 }
 
+.fullscreen-toggle {
+  position: fixed;
+  right: calc(clamp(1rem, 3vw, 2rem) + 3.75rem);
+  bottom: clamp(1rem, 3vw, 2rem);
+  z-index: 70;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background-color: var(--cream);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 15px 30px -15px rgba(28, 25, 23, 0.35);
+  transition: background-color 0.2s ease;
+}
+
+.fullscreen-toggle:hover {
+  background-color: var(--paper);
+}
+
+.fullscreen-icon-exit {
+  display: none;
+}
+
+.fullscreen-toggle.is-fullscreen .fullscreen-icon-enter {
+  display: none;
+}
+
+.fullscreen-toggle.is-fullscreen .fullscreen-icon-exit {
+  display: block;
+}
+
 /* ---------------------------------------------------------------------
    Decor - crayon doodles scattered around the content, added by script.js
    from the DECOR list. Positioned inside a width-capped, centered stage

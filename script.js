@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initModelModal();
   initDistanceGame();
   initCasettesModal();
+  initFullscreenToggle();
 });
 
 /* -----------------------------------------------------------------------
@@ -673,4 +674,47 @@ function initCasettesModal() {
     }
   });
   observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
+}
+
+/* -----------------------------------------------------------------------
+   Full screen toggle - iPad Safari supports the standard Fullscreen API
+   for the whole page (iPhone Safari doesn't), so this hides itself on
+   anything that can't actually honor it instead of sitting there as a
+   dead button.
+   ----------------------------------------------------------------------- */
+function initFullscreenToggle() {
+  const btn = document.getElementById('fullscreenToggle');
+  if (!btn) return;
+
+  const doc = document;
+  const requestFullscreen = doc.documentElement.requestFullscreen || doc.documentElement.webkitRequestFullscreen;
+  const exitFullscreen = doc.exitFullscreen || doc.webkitExitFullscreen;
+  const supported = !!requestFullscreen && (doc.fullscreenEnabled || doc.webkitFullscreenEnabled);
+
+  if (!supported) {
+    btn.style.display = 'none';
+    return;
+  }
+
+  function isFullscreen() {
+    return !!(doc.fullscreenElement || doc.webkitFullscreenElement);
+  }
+
+  function updateState() {
+    const active = isFullscreen();
+    btn.classList.toggle('is-fullscreen', active);
+    btn.setAttribute('aria-pressed', String(active));
+    btn.setAttribute('aria-label', active ? 'Exit full screen' : 'Full screen');
+  }
+
+  btn.addEventListener('click', () => {
+    if (isFullscreen()) {
+      exitFullscreen.call(doc);
+    } else {
+      requestFullscreen.call(doc.documentElement);
+    }
+  });
+
+  doc.addEventListener('fullscreenchange', updateState);
+  doc.addEventListener('webkitfullscreenchange', updateState);
 }
