@@ -534,16 +534,20 @@ function initModelModal() {
   // Safari kills the page ("A Problem Repeatedly Occurred").
   const previewFrames = document.querySelectorAll('.panel-model-frame');
 
+  // 'about:blank' actually unloads the iframe. An empty string does not -
+  // the browser resolves '' against the parent page's own URL, so the
+  // iframe would silently start loading a whole second copy of index.html
+  // (video, fonts, its own nested preview, everything) inside itself.
   document.querySelectorAll('[data-open-modal="modelModal"]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      previewFrames.forEach((f) => { f.src = ''; });
+      previewFrames.forEach((f) => { f.src = 'about:blank'; });
       frame.src = 'globo.html?interactive=1';
     });
   });
 
   const observer = new MutationObserver(() => {
     if (!modal.classList.contains('is-open')) {
-      frame.src = '';
+      frame.src = 'about:blank';
       previewFrames.forEach((f) => { f.src = 'globo.html'; });
     }
   });
