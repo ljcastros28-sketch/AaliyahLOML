@@ -1032,6 +1032,21 @@ button.panel-card {
   height: min(125vh, calc(125vw * 669 / 750));
 }
 
+/* In portrait, the viewport is narrower than the camera photo's own
+   750:669 ratio - the "fit" size at 100% already touches both left and
+   right edges with zero slack, so any bigger-and-shift-right treatment
+   crops straight into the ENTER/MENU buttons (or worse). Just fit it
+   fully instead of bleeding off screen. */
+@media (orientation: portrait) {
+  .camera-stage {
+    right: auto;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(100vw, calc(100vh * 750 / 669));
+    height: min(100vh, calc(100vw * 669 / 750));
+  }
+}
+
 .camera-video {
   position: absolute;
   left: 17.73%;
