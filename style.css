@@ -1014,15 +1014,19 @@ button.panel-card {
   max-height: none;
   background-color: #0a0a0a;
   border-radius: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
 }
 
+/* Deliberately bigger than the viewport and anchored to the right edge -
+   it's meant to bleed off screen (left/top/bottom get clipped by the
+   overflow: hidden above) rather than shrink to fit inside it. */
 .camera-stage {
-  position: relative;
-  width: min(100vw, calc(100vh * 750 / 669));
-  height: min(100vh, calc(100vw * 669 / 750));
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: min(160vw, calc(160vh * 750 / 669));
+  height: min(160vh, calc(160vw * 669 / 750));
 }
 
 .camera-video {
