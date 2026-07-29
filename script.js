@@ -527,8 +527,16 @@ function initModelModal() {
   const frame = modal.querySelector('.model-modal-frame');
   if (!frame) return;
 
+  // The small dashboard preview card runs its own live Three.js/WebGL
+  // scene the whole time. iPad Safari only tolerates so much WebGL memory
+  // at once, so it gets paused for as long as the big interactive scene
+  // is open - otherwise there are two heavy scenes running at once and
+  // Safari kills the page ("A Problem Repeatedly Occurred").
+  const previewFrames = document.querySelectorAll('.panel-model-frame');
+
   document.querySelectorAll('[data-open-modal="modelModal"]').forEach((btn) => {
     btn.addEventListener('click', () => {
+      previewFrames.forEach((f) => { f.src = ''; });
       frame.src = 'globo.html?interactive=1';
     });
   });
@@ -536,6 +544,7 @@ function initModelModal() {
   const observer = new MutationObserver(() => {
     if (!modal.classList.contains('is-open')) {
       frame.src = '';
+      previewFrames.forEach((f) => { f.src = 'globo.html'; });
     }
   });
   observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
