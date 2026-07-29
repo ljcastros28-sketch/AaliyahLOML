@@ -689,9 +689,11 @@ function initFullscreenToggle() {
   const doc = document;
   const requestFullscreen = doc.documentElement.requestFullscreen || doc.documentElement.webkitRequestFullscreen;
   const exitFullscreen = doc.exitFullscreen || doc.webkitExitFullscreen;
-  const supported = !!requestFullscreen && (doc.fullscreenEnabled || doc.webkitFullscreenEnabled);
 
-  if (!supported) {
+  // iPadOS Safari's fullscreenEnabled/webkitFullscreenEnabled flags are
+  // unreliable - just checking that the method itself exists is a more
+  // trustworthy signal than checking whether it's "enabled" too.
+  if (typeof requestFullscreen !== 'function') {
     btn.style.display = 'none';
     return;
   }
