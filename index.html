@@ -119,11 +119,9 @@
         <img class="panel-cover-img is-active" src="decor/cassette.png" alt="A cassette of songs that remind me of you">
       </button>
 
-      <div class="panel-card panel-video">
-        <span class="panel-video-icon" aria-hidden="true">&#9654;</span>
-        <p class="panel-card-title">A little video</p>
-        <p class="panel-card-sub">coming soon</p>
-      </div>
+      <button type="button" class="panel-card panel-cover panel-video" data-open-modal="cameraModal">
+        <img class="panel-cover-img is-active" src="fotos/portadavideo.jpg" alt="A little video">
+      </button>
 
     </div>
   </section>
@@ -234,6 +232,22 @@
           </button>
         </div>
         <p class="casette-now-playing" id="casetteNowPlaying"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- The little video - opens full screen instead of in a boxed panel
+       like the others. camara345.png has its background AND its own
+       screen both cut to transparent (see decor/), so the video sits
+       right in that empty-screen window, as if it's playing on the
+       camera itself. -->
+  <div class="section-modal" id="cameraModal" aria-hidden="true">
+    <div class="section-modal-backdrop" data-modal-close></div>
+    <div class="section-modal-panel section-modal-panel--camera">
+      <button type="button" class="section-modal-close" data-modal-close aria-label="Close">&times;</button>
+      <div class="camera-stage">
+        <video class="camera-video" id="cameraVideo" playsinline loop></video>
+        <img class="camera-frame" src="decor/camara345.png" alt="">
       </div>
     </div>
   </div>

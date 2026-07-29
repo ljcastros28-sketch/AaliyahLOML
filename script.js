@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initDistanceGame();
   initCasettesModal();
   initFullscreenToggle();
+  initCameraModal();
 });
 
 /* -----------------------------------------------------------------------
@@ -719,4 +720,43 @@ function initFullscreenToggle() {
 
   doc.addEventListener('fullscreenchange', updateState);
   doc.addEventListener('webkitfullscreenchange', updateState);
+}
+
+/* -----------------------------------------------------------------------
+   The little video - full screen camera view. Background music pauses
+   while it's open (same pattern as the casettes modal) and the video
+   itself only plays while the modal is actually open.
+   ----------------------------------------------------------------------- */
+function initCameraModal() {
+  const modal = document.getElementById('cameraModal');
+  const video = document.getElementById('cameraVideo');
+  const audio = document.getElementById('bgAudio');
+  if (!modal || !video) return;
+
+  let wasPlaying = false;
+
+  document.querySelectorAll('[data-open-modal="cameraModal"]').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      if (audio) {
+        wasPlaying = !audio.paused && !audio.muted;
+        audio.pause();
+      }
+      try {
+        video.currentTime = 0;
+      } catch (err) {
+        // No source loaded yet - nothing to rewind.
+      }
+      video.play().catch(() => {});
+    });
+  });
+
+  const observer = new MutationObserver(() => {
+    if (modal.classList.contains('is-open')) return;
+
+    video.pause();
+    if (wasPlaying && audio) {
+      audio.play().catch(() => {});
+    }
+  });
+  observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
 }
