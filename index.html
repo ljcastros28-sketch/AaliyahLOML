@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aaliyah</title>
+
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="256x256" href="favicon-256.png">
+  <link rel="apple-touch-icon" href="favicon-256.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ballet:opsz@16..72&family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="nav">
+    <a href="#hero" class="nav-mark">Aaliyah</a>
+  </header>
+
+  <!-- ① HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <p class="eyebrow">31 . 07 . 2025</p>
+        <h1 class="hero-title">Aaliyah</h1>
+        <div class="counter-pill">
+          <span class="counter-number js-day-count">0</span>
+          <span class="counter-label">days with you</span>
+        </div>
+      </div>
+
+      <div class="hero-photo">
+        <video src="videos/hero.mp4" poster="fotos/hero.jpg" autoplay muted loop playsinline>
+          <img src="fotos/hero.jpg" alt="Us">
+        </video>
+      </div>
+    </div>
+  </section>
+
+  <!-- ② PANELS - a small dashboard of cards; Story/Gallery open as modals -->
+  <section class="panels" id="panels">
+    <div class="panels-grid">
+
+      <button type="button" class="panel-card panel-cover panel-story" data-open-modal="storyModal">
+        <img class="panel-cover-img is-active" src="fotos/cuento/pagina-01.jpg" alt="">
+        <span class="panel-cover-scrim" aria-hidden="true"></span>
+        <span class="panel-cover-label">
+          <span class="panel-card-title">Our Story</span>
+          <span class="panel-card-sub">The Fairy and the Forgotten Flower</span>
+        </span>
+      </button>
+
+      <button type="button" class="panel-card panel-cover panel-gallery" data-open-modal="galleryModal">
+        <!-- Cycles through these like an iPhone photo widget - see initGalleryPreview() -->
+        <img class="panel-cover-img is-active" src="fotos/1.jpg" alt="">
+        <img class="panel-cover-img" src="fotos/8.jpg" alt="">
+        <img class="panel-cover-img" src="fotos/15.jpg" alt="">
+        <img class="panel-cover-img" src="fotos/24.jpg" alt="">
+        <img class="panel-cover-img" src="fotos/33.jpg" alt="">
+        <img class="panel-cover-img" src="fotos/42.jpg" alt="">
+        <img class="panel-cover-img" src="fotos/50.jpg" alt="">
+        <span class="panel-cover-scrim" aria-hidden="true"></span>
+        <span class="panel-cover-label">
+          <span class="panel-card-title">Gallery</span>
+          <span class="panel-card-sub">every little moment</span>
+        </span>
+      </button>
+
+      <button type="button" class="panel-card panel-model" data-open-modal="modelModal">
+        <iframe class="panel-model-frame" src="globo.html" title="3D snow globe" loading="lazy" tabindex="-1"></iframe>
+      </button>
+
+      <div class="panel-card panel-stat">
+        <span class="panel-stat-number js-day-count">0</span>
+        <span class="panel-stat-label">days with you</span>
+      </div>
+
+      <div class="panel-card panel-stat panel-countdown">
+        <span class="panel-stat-number" id="countdownDays">--</span>
+        <span class="panel-stat-label">remaining time for<br>make out session</span>
+      </div>
+
+      <div class="panel-card panel-timezone">
+        <p class="panel-card-title">Right now</p>
+        <div class="tz-row">
+          <div class="tz-clock">
+            <span class="tz-time" id="tzBogota">--:--</span>
+            <span class="tz-city">Bogotá</span>
+          </div>
+          <div class="tz-divider" aria-hidden="true"></div>
+          <div class="tz-clock">
+            <span class="tz-time" id="tzOxnard">--:--</span>
+            <span class="tz-city">Oxnard</span>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="panel-card panel-distance" data-open-modal="distanceModal">
+        <p class="panel-card-title">The distance</p>
+        <span class="panel-stat-number js-distance-km">-- km</span>
+        <div class="distance-path">
+          <span class="distance-city">Bogotá</span>
+          <span class="distance-line"><img class="distance-plane" src="decor/16.png" alt=""></span>
+          <span class="distance-city">Oxnard</span>
+        </div>
+      </button>
+
+      <button type="button" class="panel-card panel-cover panel-playlist" data-open-modal="casettesModal">
+        <img class="panel-cover-img is-active" src="decor/cassette.png" alt="A cassette of songs that remind me of you">
+      </button>
+
+      <div class="panel-card panel-video">
+        <span class="panel-video-icon" aria-hidden="true">&#9654;</span>
+        <p class="panel-card-title">A little video</p>
+        <p class="panel-card-sub">coming soon</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Story and Gallery live here as modals, opened from the nav or the
+       panel cards above - they stay on top of whatever page you're on
+       instead of navigating away. -->
+  <div class="section-modal" id="storyModal" aria-hidden="true">
+    <div class="section-modal-backdrop" data-modal-close></div>
+    <div class="section-modal-panel">
+      <button type="button" class="section-modal-close" data-modal-close aria-label="Close">&times;</button>
+      <div class="section-modal-body">
+        <div class="story">
+          <p class="section-label">a story just for you</p>
+          <h2 class="story-title">The Fairy and the Forgotten Flower</h2>
+
+          <div class="book">
+            <button type="button" class="book-nav book-nav-prev" aria-label="Previous page" disabled>&#8592;</button>
+
+            <div class="book-frame" id="bookFrame">
+              <!-- Pages are rendered by script.js from the STORY_PAGES list -->
+            </div>
+
+            <button type="button" class="book-nav book-nav-next" aria-label="Next page">&#8594;</button>
+          </div>
+
+          <div class="book-progress" id="bookProgress"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-modal" id="galleryModal" aria-hidden="true">
+    <div class="section-modal-backdrop" data-modal-close></div>
+    <div class="section-modal-panel">
+      <button type="button" class="section-modal-close" data-modal-close aria-label="Close">&times;</button>
+      <div class="section-modal-body">
+        <div class="gallery">
+          <p class="section-label">gallery</p>
+
+          <div class="gallery-grid" id="galleryGrid">
+            <!-- Items are rendered by script.js from the GALLERY_ITEMS list -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- The 3D model, opened big and interactive - drag to look around,
+       tap the globe to shake it. globo.html's src is only set once this
+       is actually opened (see initModelModal), so it's not loading a
+       second live Three.js scene the whole time in the background. -->
+  <div class="section-modal" id="modelModal" aria-hidden="true">
+    <div class="section-modal-backdrop" data-modal-close></div>
+    <div class="section-modal-panel section-modal-panel--model">
+      <button type="button" class="section-modal-close" data-modal-close aria-label="Close">&times;</button>
+      <div class="section-modal-body">
+        <iframe class="model-modal-frame" title="3D snow globe - drag to look around, tap to shake" loading="lazy"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Distance mini-game - tap anywhere on the path to send a heart
+       flying from Bogotá to Oxnard. Count persists across visits. -->
+  <div class="section-modal" id="distanceModal" aria-hidden="true">
+    <div class="section-modal-backdrop" data-modal-close></div>
+    <div class="section-modal-panel section-modal-panel--game">
+      <button type="button" class="section-modal-close" data-modal-close aria-label="Close">&times;</button>
+      <div class="section-modal-body">
+        <div class="distance-game">
+          <p class="section-label">the distance</p>
+          <span class="panel-stat-number js-distance-km">-- km</span>
+          <p class="distance-game-hint">tap anywhere to send a heart across</p>
+
+          <div class="distance-game-track" id="distanceGameTrack">
+            <span class="distance-game-city">Bogotá</span>
+            <span class="distance-game-line"></span>
+            <span class="distance-game-city">Oxnard</span>
+          </div>
+
+          <p class="distance-game-count">
+            <span class="distance-game-count-number" id="heartsSentCount">0</span>
+            <span class="distance-game-count-label">hearts sent across</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- The 3 cassettes reveal one at a time when this opens (see the
+       transition-delay stagger in the CSS). Background music pauses
+       while this is open and only picks back up once it's closed. -->
+  <div class="section-modal" id="casettesModal" aria-hidden="true">
+    <div class="section-modal-backdrop" data-modal-close></div>
+    <div class="section-modal-panel section-modal-panel--casettes">
+      <button type="button" class="section-modal-close" data-modal-close aria-label="Close">&times;</button>
+      <div class="section-modal-body">
+        <p class="section-label casettes-title">songs that remind me of you</p>
+        <div class="casettes-reveal" id="casettesReveal">
+          <button type="button" class="casette-item">
+            <img src="decor/casette1.png" alt="Play the first cassette">
+          </button>
+          <button type="button" class="casette-item">
+            <img src="decor/casette2.png" alt="Play the second cassette">
+          </button>
+          <button type="button" class="casette-item">
+            <img src="decor/casette3.png" alt="Play the third cassette">
+          </button>
+        </div>
+        <p class="casette-now-playing" id="casetteNowPlaying"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+    <button type="button" class="lightbox-nav prev" id="lightboxPrev" aria-label="Previous">&#8592;</button>
+    <div class="lightbox-stage" id="lightboxStage"></div>
+    <button type="button" class="lightbox-nav next" id="lightboxNext" aria-label="Next">&#8594;</button>
+  </div>
+
+  <!-- Background music - script.js tries to play this with sound right
+       away; if the browser blocks that (no interaction yet), it starts
+       on the visitor's very first tap/click/key anywhere on the page. -->
+  <audio id="bgAudio" src="audio/song.mp3" loop preload="none"></audio>
+  <button type="button" class="sound-toggle" id="soundToggle" aria-label="Play music" aria-pressed="false">
+    <svg class="sound-icon sound-icon-on" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 9v6h4l5 4V5L7 9H3z" fill="currentColor" stroke="none"/>
+      <path d="M16 8.5c1.4 1.2 1.4 5.8 0 7"/>
+      <path d="M18.5 6c2.4 2.5 2.4 9.5 0 12"/>
+    </svg>
+    <svg class="sound-icon sound-icon-off" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 9v6h4l5 4V5L7 9H3z" fill="currentColor" stroke="none"/>
+      <path d="M15.5 9.5l5 5M20.5 9.5l-5 5"/>
+    </svg>
+  </button>
+
+  <script src="script.js"></script>
+</body>
+</html>

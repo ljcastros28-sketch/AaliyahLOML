@@ -1,0 +1,1184 @@
+:root {
+  --cream: #FAFAF7;
+  --paper: #F1EBDD;
+  --nude: #C0946E;
+  --ink: #1C1917;
+  --ink-soft: #6B6459;
+  --line: rgba(28, 25, 23, 0.12);
+  --radius-lg: 32px;
+  --radius-md: 20px;
+
+  --font-display: 'Cormorant Garamond', serif;
+  --font-script: 'Ballet', cursive;
+  --font-sans: 'Montserrat', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body {
+  background-color: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  width: 100%;
+}
+
+img, video {
+  max-width: 100%;
+  display: block;
+}
+
+/* ---------------------------------------------------------------------
+   Nav
+   --------------------------------------------------------------------- */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.75rem clamp(1.5rem, 5vw, 4rem);
+}
+
+.nav-mark {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.35rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+/* ---------------------------------------------------------------------
+   Shared section label
+   --------------------------------------------------------------------- */
+.section-label {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* ---------------------------------------------------------------------
+   Hero
+   --------------------------------------------------------------------- */
+.hero {
+  position: relative;
+  z-index: 0;
+  padding: clamp(1rem, 4vw, 3rem) clamp(1.5rem, 5vw, 4rem) clamp(4rem, 8vw, 7rem);
+}
+
+.hero-inner {
+  display: grid;
+  grid-template-columns: 0.85fr 1.3fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  letter-spacing: 0.35em;
+  color: var(--ink-soft);
+  margin-bottom: 1.75rem;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(4.5rem, 10vw, 9.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.9rem;
+}
+
+.counter-pill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  background-color: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.85rem 1.7rem;
+}
+
+.counter-number {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.7rem;
+}
+
+.counter-label {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.hero-photo {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  aspect-ratio: 3 / 2;
+  background-color: var(--paper);
+  box-shadow: 0 40px 60px -30px rgba(28, 25, 23, 0.35);
+}
+
+.hero-photo img,
+.hero-photo video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------------------------------------------------------------------
+   Panels - a small dashboard of cards between the hero and the letter.
+   Story and Gallery are triggers (data-open-modal) rather than links;
+   see .section-modal further down for what opens when they're clicked.
+   --------------------------------------------------------------------- */
+.panels {
+  position: relative;
+  z-index: 0;
+  padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 5vw, 4rem) clamp(4rem, 8vw, 7rem);
+}
+
+/* Big, soft doodle-sheet background behind the whole section - sits
+   under the cards (negative z-index), so it reads as a backdrop rather
+   than competing with them. */
+.panels::before {
+  content: '';
+  position: absolute;
+  top: 18%;
+  right: -5%;
+  bottom: -5%;
+  left: -5%;
+  z-index: -1;
+  background-image: url('decor/panels-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.panels-grid {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: 130px;
+  grid-auto-flow: dense;
+  gap: 1.25rem;
+}
+
+.panel-card {
+  position: relative;
+  background-color: rgba(241, 235, 221, 0.4);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  color: var(--ink);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 20px 45px -20px rgba(28, 25, 23, 0.3);
+}
+
+/* A soft sheen across the top, like light catching the edge of glass */
+.panel-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 45%);
+  pointer-events: none;
+}
+
+button.panel-card {
+  cursor: pointer;
+  appearance: none;
+}
+
+.panel-card-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+
+.panel-card-sub {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-top: 0.35rem;
+}
+
+/* Story / Gallery cover tiles - tall enough (span 3, not 2) that a
+   portrait photo doesn't get crushed down to a thin cropped sliver by
+   object-fit: cover. object-position leans toward the top since that's
+   usually where the subject/title actually is in these source photos. */
+.panel-cover {
+  grid-column: span 5;
+  grid-row: span 3;
+  padding: 0;
+  justify-content: flex-end;
+  border: none;
+}
+
+.panel-cover-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  opacity: 0;
+  transition: opacity 1.2s ease, transform 0.5s ease;
+}
+
+.panel-cover-img.is-active {
+  opacity: 1;
+}
+
+.panel-cover:hover .panel-cover-img {
+  transform: scale(1.04);
+}
+
+.panel-cover-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(20, 17, 15, 0.75), rgba(20, 17, 15, 0) 55%);
+}
+
+.panel-cover-label {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem;
+  text-align: left;
+}
+
+.panel-cover-label .panel-card-title,
+.panel-cover-label .panel-card-sub {
+  color: var(--cream);
+}
+
+/* 3D model - the snow globe from the original hero, in its usual black
+   backdrop (see globo.html) - embedded as-is rather than re-implementing
+   the Three.js scene a second time. Small and narrow next to Story/Gallery
+   on purpose. */
+.panel-model {
+  grid-column: span 2;
+  grid-row: span 3;
+  padding: 0;
+  border: none;
+  background-color: #050505;
+}
+
+.panel-model-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  /* This preview is passive (no drag controls) - without this, the
+     iframe eats the click before it can ever reach the button under it. */
+  pointer-events: none;
+}
+
+/* Stat tiles */
+.panel-stat {
+  grid-column: span 3;
+  align-items: flex-start;
+}
+
+.panel-stat-number {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2.6rem;
+  line-height: 1;
+}
+
+.panel-stat-label {
+  margin-top: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.panel-countdown .panel-stat-number {
+  color: var(--nude);
+}
+
+/* Timezone */
+.panel-timezone {
+  grid-column: span 6;
+}
+
+.tz-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 0.75rem;
+}
+
+.tz-clock {
+  display: flex;
+  flex-direction: column;
+}
+
+.tz-time {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.9rem;
+}
+
+.tz-city {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-top: 0.2rem;
+}
+
+.tz-divider {
+  width: 1px;
+  align-self: stretch;
+  background-color: var(--line);
+}
+
+/* Distance */
+.panel-distance {
+  grid-column: span 4;
+  grid-row: span 2;
+}
+
+.distance-path {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 1.5rem;
+}
+
+.distance-city {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  flex: none;
+}
+
+.distance-line {
+  flex: 1;
+  position: relative;
+  height: 1px;
+  border-top: 1px dashed var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.distance-plane {
+  width: 42px;
+  height: auto;
+  background-color: var(--paper);
+  padding: 0 0.4rem;
+}
+
+/* Playlist - a plain cover tile like Story/Gallery, just the cassette
+   photo, no overlay text (see panel-cover above for the shared image/
+   scrim/label rules; this card only needs the sizing here). */
+.panel-playlist {
+  grid-column: span 4;
+  grid-row: span 2;
+}
+
+/* Video */
+.panel-video {
+  grid-column: span 4;
+  grid-row: span 2;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.panel-video-icon {
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nude);
+  font-size: 0.85rem;
+}
+
+.panel-video .panel-card-sub {
+  margin-top: 0.15rem;
+}
+
+/* ---------------------------------------------------------------------
+   Story - interactive book
+   --------------------------------------------------------------------- */
+.story {
+  position: relative;
+  padding: clamp(4rem, 8vw, 7rem) clamp(1.5rem, 5vw, 4rem);
+  text-align: center;
+}
+
+.story-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+.book {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.75rem, 3vw, 2rem);
+}
+
+/* Wide enough for two page images side by side - roughly double the
+   width of a single page at the same aspect ratio. */
+.book-frame {
+  flex: none;
+  width: min(85vw, 820px);
+  aspect-ratio: 2978 / 2106;
+  background-color: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 30px 60px -30px rgba(28, 25, 23, 0.35);
+}
+
+.book-page {
+  position: relative;
+  display: none;
+  width: 100%;
+  height: 100%;
+}
+
+.book-page.is-active {
+  display: flex;
+}
+
+.book-page img {
+  width: 50%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.book-page.is-single img {
+  width: 100%;
+}
+
+/* The spine down the middle of an open spread */
+.book-page:not(.is-single)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 3px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.18),
+    rgba(0, 0, 0, 0.04) 40%,
+    rgba(0, 0, 0, 0.04) 60%,
+    rgba(0, 0, 0, 0.18)
+  );
+  pointer-events: none;
+}
+
+.book-nav {
+  flex: none;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background-color: var(--cream);
+  color: var(--ink);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.book-nav:hover:not(:disabled) {
+  background-color: var(--paper);
+}
+
+.book-nav:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.book-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+
+.book-dot {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background-color: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.book-dot.is-active {
+  background-color: var(--nude);
+  border-color: var(--nude);
+  transform: scale(1.2);
+}
+
+/* ---------------------------------------------------------------------
+   Gallery + lightbox
+   --------------------------------------------------------------------- */
+.gallery {
+  position: relative;
+  padding: clamp(4rem, 8vw, 7rem) clamp(1.5rem, 5vw, 4rem);
+}
+
+.gallery-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(0.75rem, 2vw, 1.25rem);
+}
+
+.gallery-item {
+  position: relative;
+  border: none;
+  padding: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  aspect-ratio: 1;
+  background-color: var(--paper);
+  cursor: pointer;
+}
+
+.gallery-item.is-tall {
+  grid-row: span 2;
+  aspect-ratio: auto;
+}
+
+.gallery-item img,
+.gallery-item video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.gallery-item:hover img,
+.gallery-item:hover video {
+  transform: scale(1.045);
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(20, 17, 15, 0.94);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.lightbox.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.lightbox-stage img,
+.lightbox-stage video {
+  max-width: 88vw;
+  max-height: 82vh;
+  border-radius: var(--radius-md);
+}
+
+.lightbox-close,
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  border: 1px solid rgba(250, 247, 247, 0.3);
+  background-color: transparent;
+  color: var(--cream);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.lightbox-close:hover,
+.lightbox-nav:hover {
+  background-color: rgba(250, 247, 247, 0.1);
+  border-color: rgba(250, 247, 247, 0.6);
+}
+
+.lightbox-close {
+  top: 1.75rem;
+  right: 1.75rem;
+  transform: none;
+}
+
+.lightbox-nav.prev {
+  left: 1.5rem;
+}
+
+.lightbox-nav.next {
+  right: 1.5rem;
+}
+
+/* ---------------------------------------------------------------------
+   Section modal - the shell Story and Gallery open inside of. Stays on
+   top of whatever page you're on rather than navigating away; closes via
+   the × button, clicking the backdrop, or Escape. Sits below the
+   lightbox (z-index 50) so a photo opened from inside the gallery modal
+   still layers correctly on top of it.
+   --------------------------------------------------------------------- */
+.section-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.section-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.section-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(20, 17, 15, 0.55);
+}
+
+.section-modal-panel {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  max-width: 1200px;
+  max-height: 88vh;
+  background-color: var(--cream);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 50px 90px -30px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+
+.section-modal-body {
+  max-height: 88vh;
+  overflow-y: auto;
+}
+
+/* The 3D model modal is a square viewer, not a scrolling text panel -
+   its own sizing instead of the default text-content proportions. */
+.section-modal-panel--model {
+  width: min(90vw, 640px);
+  max-width: 640px;
+  aspect-ratio: 1;
+}
+
+.section-modal-panel--model .section-modal-body {
+  height: 100%;
+  max-height: none;
+  overflow: hidden;
+}
+
+.model-modal-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background-color: #EDE3D0;
+}
+
+/* Distance mini-game */
+.section-modal-panel--game {
+  max-width: 560px;
+}
+
+.distance-game {
+  padding: clamp(3rem, 6vw, 4rem) clamp(1.5rem, 4vw, 3rem) 2.5rem;
+  text-align: center;
+}
+
+.distance-game .panel-stat-number {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2.6rem;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.distance-game-hint {
+  margin-top: 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.distance-game-track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding: 1.5rem 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.distance-game-city {
+  flex: none;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.distance-game-line {
+  flex: 1;
+  position: relative;
+  height: 1px;
+  border-top: 1px dashed var(--line);
+}
+
+.distance-heart {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  font-size: 1.3rem;
+  transform: translate(-50%, -50%);
+  animation: distance-heart-fly 1.4s cubic-bezier(0.3, 0, 0.2, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes distance-heart-fly {
+  0% {
+    left: 0%;
+    transform: translate(-50%, -50%) scale(0.6) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -160%) scale(1.15) rotate(8deg);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    transform: translate(-50%, -50%) scale(0.8) rotate(-6deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .distance-heart {
+    animation-duration: 0.01s;
+  }
+}
+
+.distance-game-count {
+  margin-top: 2.5rem;
+}
+
+.distance-game-count-number {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2rem;
+  color: var(--nude);
+}
+
+.distance-game-count-label {
+  display: block;
+  margin-top: 0.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* Cassettes - reveal one at a time (see the transition-delay stagger
+   below), triggered by .section-modal.is-open on the ancestor modal. */
+.section-modal-panel--casettes {
+  position: relative;
+  max-width: 900px;
+}
+
+/* decor/19.png as a soft backdrop behind the cassettes, rather than a
+   sticker of its own - same trick as .panels::before. */
+.section-modal-panel--casettes::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('decor/19.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.casettes-title {
+  padding-top: clamp(2.5rem, 6vw, 3.5rem);
+  margin-bottom: -1rem;
+}
+
+.casettes-reveal {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  padding: clamp(3rem, 7vw, 5rem) clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.casette-decor {
+  position: absolute;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 8px 16px rgba(28, 25, 23, 0.15));
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.section-modal.is-open .casette-decor {
+  opacity: 1;
+}
+
+.casette-decor-1 {
+  width: 70px;
+  top: 2%;
+  left: 1%;
+  transform: rotate(-10deg);
+  transition-delay: 0.95s;
+}
+
+.casette-decor-2 {
+  width: 60px;
+  top: 34%;
+  right: 0%;
+  transform: rotate(10deg);
+  transition-delay: 1.1s;
+}
+
+.casette-decor-3 {
+  width: 55px;
+  bottom: 4%;
+  left: 6%;
+  transform: rotate(-6deg);
+  transition-delay: 1.25s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .casette-decor {
+    transition-duration: 0.01s;
+    transition-delay: 0s !important;
+  }
+}
+
+.casette-item {
+  width: clamp(160px, 22vw, 240px);
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(28px) scale(0.9);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.casette-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 20px 35px rgba(28, 25, 23, 0.3));
+}
+
+.section-modal.is-open .casette-item {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.section-modal.is-open .casette-item:nth-child(1) { transition-delay: 0.15s; }
+.section-modal.is-open .casette-item:nth-child(2) { transition-delay: 0.45s; }
+.section-modal.is-open .casette-item:nth-child(3) { transition-delay: 0.75s; }
+
+/* Tapping a cassette focuses it - the other two step back so the
+   playing one is clearly "the one", rather than three equal photos. */
+.casettes-reveal.has-focus .casette-item {
+  opacity: 0.4;
+  transform: translateY(0) scale(0.88);
+}
+
+.casettes-reveal.has-focus .casette-item.is-playing {
+  opacity: 1;
+  transform: translateY(-10px) scale(1.15);
+}
+
+.casette-now-playing {
+  margin-top: 1.5rem;
+  padding: 0 1.5rem;
+  min-height: 1.2em;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  text-align: center;
+  color: var(--ink);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.casette-now-playing.is-visible {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .casette-item {
+    transition-duration: 0.01s;
+    transition-delay: 0s !important;
+  }
+}
+
+.section-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background-color: var(--cream);
+  color: var(--ink);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.section-modal-close:hover {
+  background-color: var(--paper);
+}
+
+/* The .story/.gallery padding was sized for a full page section; inside
+   the more compact modal panel it just wastes space, so it's dialed
+   back here. */
+.section-modal .story,
+.section-modal .gallery {
+  padding: clamp(3rem, 6vw, 4rem) clamp(1.5rem, 4vw, 3rem) 2.5rem;
+}
+
+/* ---------------------------------------------------------------------
+   Sound toggle - background music starts muted (browsers block
+   autoplay-with-sound), tap to unmute. Sits above everything, including
+   open modals, so it's always reachable.
+   --------------------------------------------------------------------- */
+.sound-toggle {
+  position: fixed;
+  right: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 2rem);
+  z-index: 70;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background-color: var(--cream);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 15px 30px -15px rgba(28, 25, 23, 0.35);
+  transition: background-color 0.2s ease;
+}
+
+.sound-toggle:hover {
+  background-color: var(--paper);
+}
+
+.sound-icon-off {
+  display: none;
+}
+
+.sound-toggle.is-muted .sound-icon-on {
+  display: none;
+}
+
+.sound-toggle.is-muted .sound-icon-off {
+  display: block;
+}
+
+/* ---------------------------------------------------------------------
+   Decor - crayon doodles scattered around the content, added by script.js
+   from the DECOR list. Positioned inside a width-capped, centered stage
+   (not the raw full-bleed section) so on wide screens they stay anchored
+   near the actual content instead of stranded out in the side margins.
+   Off on small screens, where there's no room to put them without
+   covering content.
+   --------------------------------------------------------------------- */
+.decor-stage {
+  position: absolute;
+  inset: 0;
+  margin: 0 auto;
+  pointer-events: none;
+}
+
+.decor {
+  position: absolute;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+  filter: drop-shadow(0 6px 12px rgba(28, 25, 23, 0.12));
+}
+
+/* ---------------------------------------------------------------------
+   Responsive
+   --------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .decor {
+    display: none;
+  }
+
+  .hero-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-photo {
+    aspect-ratio: 4 / 3;
+  }
+
+  .book {
+    flex-direction: column;
+  }
+
+  .book-frame {
+    width: min(90vw, 560px);
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .panels-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* The desktop grid is 12 columns (so distance/playlist/video can share
+     a row as even thirds); here it's back to 2, so every card needs an
+     explicit span again instead of inheriting its 12-column one. */
+  .panel-cover,
+  .panel-model,
+  .panel-timezone,
+  .panel-distance,
+  .panel-playlist,
+  .panel-video {
+    grid-column: span 2;
+  }
+
+  .panel-stat {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .nav {
+    padding: 1.25rem 1.25rem;
+  }
+
+  .panels-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-cover,
+  .panel-model,
+  .panel-stat,
+  .panel-timezone,
+  .panel-distance,
+  .panel-playlist,
+  .panel-video {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
+  .panel-cover,
+  .panel-model {
+    min-height: 220px;
+  }
+
+  .section-modal-panel {
+    max-height: 92vh;
+  }
+
+  .section-modal-body {
+    max-height: 92vh;
+  }
+}

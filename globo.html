@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aaliyah</title>
+  <style>
+    * { margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #EDE3D0; }
+    canvas { display: block; width: 100%; height: 100%; }
+
+    .hint {
+      position: absolute;
+      left: 50%;
+      bottom: 6%;
+      transform: translateX(-50%);
+      width: 85%;
+      max-width: 260px;
+      text-align: center;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-style: italic;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      letter-spacing: 0.02em;
+      color: rgba(28, 25, 23, 0.55);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.7s ease;
+      animation: hint-bob 2.4s ease-in-out infinite;
+    }
+
+    .hint.is-visible {
+      opacity: 1;
+    }
+
+    @keyframes hint-bob {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-4px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hint { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="model-canvas"></canvas>
+  <p class="hint" id="hint">drag to look around · shake to make it snow · tap us</p>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    // ?interactive=1 - used for the big modal view (drag to look around,
+    // tap the globe to shake it). Without it, this is just the small
+    // passive dashboard-card preview, which only ever spins on its own.
+    const interactive = new URLSearchParams(location.search).get('interactive') === '1';
+
+    const canvas = document.getElementById('model-canvas');
+
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 0, 5);
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.8;
+
+    // Matte baked-color materials need an environment map to read as
+    // glossy/alive instead of flat - see modelo.glb material notes below.
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+
+    const hemiLight = new THREE.HemisphereLight(0xfff2e0, 0x2a0508, 0.4);
+    scene.add(hemiLight);
+
+    const keyLight = new THREE.DirectionalLight(0xfff5e8, 1.9);
+    keyLight.position.set(3, 5, 5);
+    scene.add(keyLight);
+
+    const fillLight = new THREE.DirectionalLight(0xffe9e9, 0.35);
+    fillLight.position.set(-4, -1, 3);
+    scene.add(fillLight);
+
+    const rimLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    rimLight.position.set(-2, 3, -4);
+    scene.add(rimLight);
+
+    // Rotation happens on this wrapper, never on the model itself, so the
+    // recenter offset spins in place instead of orbiting in a circle.
+    const modelPivot = new THREE.Group();
+    scene.add(modelPivot);
+
+    // Interactive mode: the camera orbits on drag (auto-rotating until
+    // the visitor grabs it), instead of the model spinning on its own.
+    let controls = null;
+    if (interactive) {
+      controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.08;
+      controls.enablePan = false;
+      controls.minDistance = 3;
+      controls.maxDistance = 8;
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 1.4;
+      controls.addEventListener('start', () => {
+        controls.autoRotate = false;
+      });
+    }
+
+    // --- Little canvas-drawn sprite textures, so no extra image assets
+    // are needed for the sparkle/heart particles. ---
+    function makeTexture(draw, size = 64) {
+      const c = document.createElement('canvas');
+      c.width = c.height = size;
+      draw(c.getContext('2d'), size);
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    }
+
+    const starTexture = makeTexture((ctx, size) => {
+      const r = size / 2;
+      const grad = ctx.createRadialGradient(r, r, 0, r, r, r);
+      grad.addColorStop(0, 'rgba(255,250,220,1)');
+      grad.addColorStop(0.4, 'rgba(255,222,150,0.9)');
+      grad.addColorStop(1, 'rgba(255,222,150,0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, size, size);
+    });
+
+    const heartTexture = makeTexture((ctx, size) => {
+      ctx.fillStyle = '#e0577a';
+      const top = size * 0.32;
+      ctx.beginPath();
+      ctx.moveTo(size / 2, top);
+      ctx.bezierCurveTo(size / 2, 0, 0, 0, 0, top);
+      ctx.bezierCurveTo(0, size * 0.6, size / 2, size * 0.8, size / 2, size);
+      ctx.bezierCurveTo(size / 2, size * 0.8, size, size * 0.6, size, top);
+      ctx.bezierCurveTo(size, 0, size / 2, 0, size / 2, top);
+      ctx.closePath();
+      ctx.fill();
+    });
+
+    // --- Star burst, for the shake ---
+    const STAR_COUNT = 26;
+    const stars = Array.from({ length: STAR_COUNT }, () => {
+      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: starTexture,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        opacity: 0,
+      }));
+      sprite.visible = false;
+      scene.add(sprite);
+      return { sprite, life: 0, maxLife: 0, velocity: new THREE.Vector3() };
+    });
+
+    function burstStars() {
+      stars.forEach((p) => {
+        const dir = new THREE.Vector3(Math.random() - 0.5, Math.random() * 0.6 + 0.25, Math.random() - 0.5).normalize();
+        p.velocity.copy(dir).multiplyScalar(1.2 + Math.random() * 1.6);
+        p.sprite.position.set(0, 0, 0);
+        p.sprite.scale.setScalar(0.12 + Math.random() * 0.14);
+        p.maxLife = 0.9 + Math.random() * 0.5;
+        p.life = p.maxLife;
+        p.sprite.visible = true;
+        p.sprite.material.opacity = 1;
+      });
+    }
+
+    // --- Hearts, spawned one at a time wherever a figure is tapped ---
+    const hearts = [];
+    function spawnHeart(point) {
+      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: heartTexture,
+        transparent: true,
+        depthWrite: false,
+      }));
+      sprite.position.copy(point);
+      sprite.scale.setScalar(0.32);
+      scene.add(sprite);
+      hearts.push({ sprite, life: 1, maxLife: 1 });
+    }
+
+    // --- A quick squash-and-settle bounce on whichever mesh was tapped ---
+    const bouncing = new Set();
+    function bounceMesh(mesh) {
+      if (!mesh.userData.baseScale) mesh.userData.baseScale = mesh.scale.clone();
+      mesh.userData.bounceStart = performance.now();
+      bouncing.add(mesh);
+    }
+
+    // --- A short synthesized chime for the shake - no audio file needed.
+    // Built lazily, from inside a real tap, so it satisfies the browser's
+    // "needs a user gesture" rule for starting audio. ---
+    let audioCtx = null;
+    function playChime() {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const now = audioCtx.currentTime;
+      [1046.5, 1318.5, 1568.0].forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        const start = now + i * 0.06;
+        gain.gain.setValueAtTime(0, start);
+        gain.gain.linearRampToValueAtTime(0.18, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.9);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start(start);
+        osc.stop(start + 1);
+      });
+    }
+
+    const hintEl = document.getElementById('hint');
+    function hideHint() {
+      if (hintEl) hintEl.classList.remove('is-visible');
+    }
+
+    // A snow globe shake, triggered by a tap/click that isn't a drag -
+    // measured as "pointer barely moved between down and up". Tapping a
+    // figure directly reacts on its own instead (a heart + a little
+    // bounce), rather than shaking the whole globe.
+    let shakeStart = null;
+    function triggerShake() {
+      shakeStart = performance.now();
+      burstStars();
+      playChime();
+      hideHint();
+    }
+
+    // Physically shaking the device (the real gesture, on an iPad) makes
+    // the stars fly too, same as tapping the globe does. iOS only hands
+    // out motion data after a permission prompt, and that prompt can only
+    // be triggered from inside a real tap - so it's requested lazily on
+    // the visitor's first touch of the canvas.
+    let motionRequested = false;
+    let lastAccel = null;
+    let lastShakeAt = 0;
+    const SHAKE_DELTA = 16;
+
+    function handleMotion(evt) {
+      const acc = evt.accelerationIncludingGravity || evt.acceleration;
+      if (!acc || acc.x === null) return;
+
+      if (lastAccel) {
+        const delta = Math.abs(acc.x - lastAccel.x) + Math.abs(acc.y - lastAccel.y) + Math.abs(acc.z - lastAccel.z);
+        const now = performance.now();
+        if (delta > SHAKE_DELTA && now - lastShakeAt > 1000) {
+          lastShakeAt = now;
+          triggerShake();
+        }
+      }
+      lastAccel = { x: acc.x, y: acc.y, z: acc.z };
+    }
+
+    function requestMotionAccess() {
+      if (motionRequested || typeof DeviceMotionEvent === 'undefined') return;
+      motionRequested = true;
+
+      if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        // iOS 13+ - only works when called from a real tap, which is why
+        // this whole function is invoked from inside the pointerdown
+        // handler below rather than automatically on load.
+        DeviceMotionEvent.requestPermission()
+          .then((state) => {
+            if (state === 'granted') window.addEventListener('devicemotion', handleMotion);
+          })
+          .catch(() => {});
+      } else {
+        window.addEventListener('devicemotion', handleMotion);
+      }
+    }
+
+    if (interactive) {
+      requestAnimationFrame(() => hintEl && hintEl.classList.add('is-visible'));
+      controls.addEventListener('start', hideHint);
+
+      const raycaster = new THREE.Raycaster();
+      const pointerNDC = new THREE.Vector2();
+      let downPos = null;
+
+      renderer.domElement.addEventListener('pointerdown', (evt) => {
+        downPos = { x: evt.clientX, y: evt.clientY };
+        requestMotionAccess();
+      });
+
+      renderer.domElement.addEventListener('pointerup', (evt) => {
+        if (!downPos) return;
+        const dist = Math.hypot(evt.clientX - downPos.x, evt.clientY - downPos.y);
+        downPos = null;
+        if (dist >= 6 || !model) return; // that was a drag, not a tap
+
+        const rect = renderer.domElement.getBoundingClientRect();
+        pointerNDC.x = ((evt.clientX - rect.left) / rect.width) * 2 - 1;
+        pointerNDC.y = -((evt.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(pointerNDC, camera);
+
+        const figureHit = raycaster
+          .intersectObject(model, true)
+          .find((hit) => hit.object.isMesh && !hit.object.userData.isBig);
+
+        if (figureHit) {
+          hideHint();
+          spawnHeart(figureHit.point);
+          bounceMesh(figureHit.object);
+        } else {
+          triggerShake();
+        }
+      });
+    }
+
+    let model = null;
+
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://unpkg.com/three@0.160.0/examples/jsm/libs/draco/gltf/');
+
+    const loader = new GLTFLoader();
+    loader.setDRACOLoader(dracoLoader);
+    loader.load(
+      'modelo.glb',
+      (gltf) => {
+        model = gltf.scene;
+
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+
+        model.position.sub(center);
+        modelPivot.add(model);
+
+        const maxDimension = Math.max(size.x, size.y, size.z);
+        modelPivot.scale.setScalar(2.5 / maxDimension);
+
+        // Natural baked vertex colors throughout - only touching material
+        // properties that fix how they render (not what color they are).
+        model.traverse((child) => {
+          if (!child.isMesh || !child.material) return;
+
+          const partBox = new THREE.Box3().setFromObject(child);
+          const partSize = partBox.getSize(new THREE.Vector3());
+          const partMax = Math.max(partSize.x, partSize.y, partSize.z);
+
+          // Anything this big is the base or the dome, not one of the two
+          // figures - used to tell a "shake the globe" tap from a
+          // "tap this figure" one.
+          child.userData.isBig = partMax > 1.5;
+
+          if (child.material.metalness >= 0.5) {
+            // Mirror-smooth metal only shows whatever exact point of the
+            // environment lines up with the view angle - most angles land
+            // on a dark patch and read as pure black. Softening the
+            // roughness spreads the reflection across a wider area.
+            child.material.roughness = Math.max(child.material.roughness, 0.35);
+            child.material.envMapIntensity = 2.4;
+          } else if (partMax > 2.5) {
+            // The glass dome - plain alpha transparency (no refraction)
+            // keeps the figures inside from warping into a funhouse-mirror
+            // look, while the surface still catches a glassy highlight.
+            child.material.transparent = true;
+            child.material.opacity = 0.35;
+            child.material.roughness = 0.05;
+            child.material.envMapIntensity = 1.4;
+            child.material.depthWrite = false;
+            child.material.needsUpdate = true;
+          }
+
+          // Push the baked vertex colors further from their own gray
+          // value so they read as vivid rather than the flatter tones
+          // they're stored at.
+          const colorAttr = child.geometry.getAttribute('color');
+          if (colorAttr) {
+            const SATURATION_BOOST = 1.6;
+            for (let i = 0; i < colorAttr.count; i++) {
+              const r = colorAttr.getX(i);
+              const g = colorAttr.getY(i);
+              const b = colorAttr.getZ(i);
+              const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+              colorAttr.setXYZ(
+                i,
+                Math.min(1, Math.max(0, luminance + (r - luminance) * SATURATION_BOOST)),
+                Math.min(1, Math.max(0, luminance + (g - luminance) * SATURATION_BOOST)),
+                Math.min(1, Math.max(0, luminance + (b - luminance) * SATURATION_BOOST))
+              );
+            }
+            colorAttr.needsUpdate = true;
+          }
+        });
+      },
+      undefined,
+      (error) => {
+        console.error('Error loading modelo.glb:', error);
+      }
+    );
+
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const dt = Math.min(clock.getDelta(), 0.05);
+
+      if (controls) {
+        controls.update();
+      } else if (model) {
+        modelPivot.rotation.y += 0.005;
+      }
+
+      if (shakeStart !== null) {
+        const t = (performance.now() - shakeStart) / 1000;
+        if (t < 0.8) {
+          modelPivot.rotation.z = Math.sin(t * 30) * 0.15 * Math.exp(-t * 6);
+        } else {
+          modelPivot.rotation.z = 0;
+          shakeStart = null;
+        }
+      }
+
+      stars.forEach((p) => {
+        if (p.life <= 0) return;
+        p.life -= dt;
+        p.velocity.y -= dt * 0.8;
+        p.velocity.multiplyScalar(0.98);
+        p.sprite.position.addScaledVector(p.velocity, dt);
+        p.sprite.material.opacity = Math.max(0, p.life / p.maxLife);
+        if (p.life <= 0) p.sprite.visible = false;
+      });
+
+      for (let i = hearts.length - 1; i >= 0; i--) {
+        const h = hearts[i];
+        h.life -= dt * 0.9;
+        h.sprite.position.y += dt * 0.5;
+        h.sprite.material.opacity = Math.max(0, h.life / h.maxLife);
+        if (h.life <= 0) {
+          scene.remove(h.sprite);
+          h.sprite.material.dispose();
+          hearts.splice(i, 1);
+        }
+      }
+
+      bouncing.forEach((mesh) => {
+        const t = (performance.now() - mesh.userData.bounceStart) / 1000;
+        if (t > 0.5) {
+          mesh.scale.copy(mesh.userData.baseScale);
+          bouncing.delete(mesh);
+          return;
+        }
+        const s = 1 + Math.sin(t * 25) * 0.18 * Math.exp(-t * 8);
+        mesh.scale.copy(mesh.userData.baseScale).multiplyScalar(s);
+      });
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
