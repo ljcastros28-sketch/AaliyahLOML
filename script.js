@@ -281,7 +281,7 @@ const DECOR = [
   { section: '.panels', src: 'decor/17.png', width: '100px', pos: 'top:25%; right:0.5%;', rotate: 8 },
   { section: '.panels', src: 'decor/18.png', width: '110px', pos: 'top:48%; left:1%;', rotate: -6 },
   { section: '.panels', src: 'decor/20.png', width: '70px', pos: 'top:50%; right:1%;', rotate: 0 },
-  { section: '.panels', src: 'decor/1.png', width: '110px', pos: 'bottom:20%; left:1%;', rotate: -10 },
+  { section: '.panels', src: 'decor/1.png', width: '110px', pos: 'bottom:2%; left:1%;', rotate: -10 },
   { section: '.panels', src: 'decor/6.png', width: '70px', pos: 'bottom:18%; right:1%;', rotate: 12 },
 ];
 

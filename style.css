@@ -421,6 +421,15 @@ button.panel-card {
   grid-row: span 2;
 }
 
+/* The cassette photo isn't the same aspect ratio as this card, so a
+   plain object-fit: cover crops its sides off - contain shows the whole
+   thing instead, centered on the card's own glass background. */
+.panel-playlist .panel-cover-img {
+  object-fit: contain;
+  object-position: center;
+  padding: 1.25rem;
+}
+
 /* Video */
 .panel-video {
   grid-column: span 4;
