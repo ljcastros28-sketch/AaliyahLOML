@@ -703,6 +703,11 @@ function initFullscreenToggle() {
     return !!(doc.fullscreenElement || doc.webkitFullscreenElement);
   }
 
+  function requestFS() {
+    const result = requestFullscreen.call(doc.documentElement);
+    if (result && typeof result.catch === 'function') result.catch(() => {});
+  }
+
   function updateState() {
     const active = isFullscreen();
     btn.classList.toggle('is-fullscreen', active);
@@ -710,16 +715,30 @@ function initFullscreenToggle() {
     btn.setAttribute('aria-label', active ? 'Exit full screen' : 'Full screen');
   }
 
+  // Tracks intent, not just the actual state - once the visitor turns this
+  // on, any exit that didn't come from clicking this same button (Escape,
+  // an accidental scroll/swipe near a screen edge, iPadOS Safari clawing
+  // its chrome back) gets fought by immediately re-requesting fullscreen,
+  // so the button stays the only real way out.
+  let wantsFullscreen = false;
+
   btn.addEventListener('click', () => {
     if (isFullscreen()) {
+      wantsFullscreen = false;
       exitFullscreen.call(doc);
     } else {
-      requestFullscreen.call(doc.documentElement);
+      wantsFullscreen = true;
+      requestFS();
     }
   });
 
-  doc.addEventListener('fullscreenchange', updateState);
-  doc.addEventListener('webkitfullscreenchange', updateState);
+  function handleChange() {
+    updateState();
+    if (wantsFullscreen && !isFullscreen()) requestFS();
+  }
+
+  doc.addEventListener('fullscreenchange', handleChange);
+  doc.addEventListener('webkitfullscreenchange', handleChange);
 }
 
 /* -----------------------------------------------------------------------
