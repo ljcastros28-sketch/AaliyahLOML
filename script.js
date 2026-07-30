@@ -246,7 +246,7 @@ const STAGE_WIDTH = {
 const DECOR = [
   // Hero
   // decor/1.png (flower), decor/2.png (sun), decor/6.png (two stars) are
-  // pulled for now - saved for later use, not deleted, just not placed.
+  // used down in the Panels section instead - not placed here.
   { section: '.hero', src: 'decor/8.png', width: '80px', pos: 'bottom:8%; right:4%;', rotate: 12 },
   { section: '.hero', src: 'decor/9.png', width: '80px', pos: 'top:4%; right:2%;', rotate: -8 },
   // Big, soft, behind everything else in the hero - a background flourish
@@ -263,9 +263,9 @@ const DECOR = [
   },
 
   // Story has no decor for now - it lives inside a compact modal and the
-  // stickers didn't have room to sit right there. decor/3.png (cloud),
-  // decor/11.png (daffodils), decor/12.png (grass), decor/15.png
-  // (dinosaur) are all still in regalo/decor/ if we want them elsewhere.
+  // stickers didn't have room to sit right there. decor/11.png (daffodils),
+  // decor/12.png (grass), decor/15.png (dinosaur) are still unused in
+  // regalo/decor/ if we want them elsewhere.
 
   // Gallery
   { section: '.gallery', src: 'decor/5.png', width: '140px', pos: 'top:1%; left:2%;', rotate: -6 },
