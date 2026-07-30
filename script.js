@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   initCounter();
+  initHeroVideo();
   initBook();
   initGallery();
   initDecor();
@@ -32,6 +33,36 @@ function initCounter() {
   const days = Math.max(Math.round((today - start) / (1000 * 60 * 60 * 24)), 0);
   targets.forEach((el) => {
     el.textContent = days;
+  });
+}
+
+/* -----------------------------------------------------------------------
+   Hero video - the autoplay/muted/playsinline attributes alone can still
+   silently fail to kick in on some mobile browsers (slow first load, iOS
+   Low Power Mode, etc.), leaving it just sitting on the poster frame. This
+   also drives .play() from script as soon as the page loads, and if even
+   that gets blocked, it retries on the visitor's very first tap/click/key
+   anywhere on the page - the same fallback pattern as the background music.
+   ----------------------------------------------------------------------- */
+function initHeroVideo() {
+  const video = document.querySelector('.hero-photo video');
+  if (!video) return;
+
+  video.muted = true;
+
+  function tryPlay() {
+    return video.play();
+  }
+
+  tryPlay().catch(() => {
+    function retry() {
+      tryPlay().then(() => {
+        document.removeEventListener('pointerdown', retry);
+        document.removeEventListener('keydown', retry);
+      }).catch(() => {});
+    }
+    document.addEventListener('pointerdown', retry, { passive: true });
+    document.addEventListener('keydown', retry);
   });
 }
 
