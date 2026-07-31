@@ -49,21 +49,32 @@ function initHeroVideo() {
   if (!video) return;
 
   video.muted = true;
+  video.setAttribute('muted', ''); // some WebKit versions re-check the attribute itself, not just the property
 
+  let unlocked = false;
   function tryPlay() {
-    return video.play();
+    video.play().then(() => {
+      unlocked = true;
+      cleanup();
+    }).catch(() => {});
   }
 
-  tryPlay().catch(() => {
-    function retry() {
-      tryPlay().then(() => {
-        document.removeEventListener('pointerdown', retry);
-        document.removeEventListener('keydown', retry);
-      }).catch(() => {});
-    }
-    document.addEventListener('pointerdown', retry, { passive: true });
-    document.addEventListener('keydown', retry);
-  });
+  function cleanup() {
+    video.removeEventListener('loadeddata', tryPlay);
+    video.removeEventListener('canplay', tryPlay);
+    document.removeEventListener('pointerdown', tryPlay);
+    document.removeEventListener('keydown', tryPlay);
+  }
+
+  // Try immediately, then again as soon as there's enough data to actually
+  // start (a play() call made before that can silently fail to "take" on
+  // some WebKit versions), and again on the visitor's first tap/click/key
+  // anywhere on the page as a last resort - same fallback as the bg music.
+  tryPlay();
+  video.addEventListener('loadeddata', tryPlay);
+  video.addEventListener('canplay', tryPlay);
+  document.addEventListener('pointerdown', tryPlay, { passive: true });
+  document.addEventListener('keydown', tryPlay);
 }
 
 /* -----------------------------------------------------------------------
